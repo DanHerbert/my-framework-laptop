@@ -1,0 +1,3 @@
+[submodule "nonpublic-framework-laptop"]
+	path = nonpublic
+	url = git@github.com:DanHerbert/nonpublic-framework-laptop.git
