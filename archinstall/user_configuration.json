@@ -1,0 +1,372 @@
+{
+    "archinstall-language": "English",
+    "audio_config": {
+        "audio": "pipewire"
+    },
+    "bootloader": "Systemd-boot",
+    "custom_commands": [
+        "chattr -f -R +C /var/cache || true",
+        "chattr -f -R +C /var/log || true",
+        "chattr -f -R +C /var/tmp || true",
+        "chattr -f -R +C /var/spool || true",
+        "chattr -f -R +C /home || true",
+        "getent group users || groupadd users",
+        "getent group sftpusers || groupadd sftpusers",
+        "getent group uucp || groupadd uucp",
+        "usermod -aG users,sftpusers,uucp dan"
+    ],
+    "disk_config": {
+        "btrfs_options": {
+            "snapshot_config": {
+                "type": "Snapper"
+            }
+        },
+        "config_type": "manual_partitioning",
+        "device_modifications": [
+            {
+                "device": "/dev/nvme0n1",
+                "partitions": [
+                    {
+                        "btrfs": [],
+                        "dev_path": null,
+                        "flags": [
+                            "boot",
+                            "esp"
+                        ],
+                        "fs_type": "fat32",
+                        "mount_options": [],
+                        "mountpoint": "/boot",
+                        "obj_id": "58aec863-7ff2-4a86-8c61-638eeef7164c",
+                        "size": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "GiB",
+                            "value": 1
+                        },
+                        "start": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "MiB",
+                            "value": 1
+                        },
+                        "status": "create",
+                        "type": "primary"
+                    },
+                    {
+                        "btrfs": [
+                            {
+                                "mountpoint": "/",
+                                "name": "@root"
+                            },
+                            {
+                                "mountpoint": "/var/cache",
+                                "name": "@var_cache"
+                            },
+                            {
+                                "mountpoint": "/var/log",
+                                "name": "@var_log"
+                            },
+                            {
+                                "mountpoint": "/var/tmp",
+                                "name": "@var_tmp"
+                            },
+                            {
+                                "mountpoint": "/var/spool",
+                                "name": "@var_spool"
+                            },
+                            {
+                                "mountpoint": "/home",
+                                "name": "@home"
+                            }
+                        ],
+                        "dev_path": null,
+                        "flags": [],
+                        "fs_type": "btrfs",
+                        "mount_options": [
+                            "noatime,compress=zstd"
+                        ],
+                        "mountpoint": "/",
+                        "obj_id": "0bb9a1b8-3701-4af4-8a33-2b974ff4781b",
+                        "size": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "B",
+                            "value": 8000487030784
+                        },
+                        "start": {
+                            "sector_size": {
+                                "unit": "B",
+                                "value": 512
+                            },
+                            "unit": "B",
+                            "value": 1074790400
+                        },
+                        "status": "create",
+                        "type": "primary"
+                    }
+                ],
+                "wipe": true
+            }
+        ],
+        "disk_encryption": {
+            "encryption_type": "luks",
+            "lvm_volumes": [],
+            "partitions": [
+                "0bb9a1b8-3701-4af4-8a33-2b974ff4781b"
+            ]
+        }
+    },
+    "hostname": "dan-lt-07",
+    "kernels": [
+        "linux",
+        "linux-lts"
+    ],
+    "locale_config": {
+        "kb_layout": "us",
+        "sys_enc": "UTF-8",
+        "sys_lang": "en_US.UTF-8"
+    },
+    "mirror_config": {
+        "custom_repositories": [],
+        "custom_servers": [],
+        "mirror_regions": {
+            "Canada": [
+                "https://mirror.csclub.uwaterloo.ca/archlinux/$repo/os/$arch",
+                "https://mirrors.pablonara.com/archlinux/$repo/os/$arch",
+                "https://upstream-1.pablonara.com/archlinux/$repo/os/$arch"
+            ],
+            "United States": [
+                "https://america.mirror.pkgbuild.com/$repo/os/$arch",
+                "https://losangeles.mirror.pkgbuild.com/$repo/os/$arch",
+                "https://mirrors.kernel.org/archlinux/$repo/os/$arch",
+                "https://mirrors.ocf.berkeley.edu/archlinux/$repo/os/$arch",
+                "https://arch.mirror.constant.com/$repo/os/$arch",
+                "https://mirrors.lug.mtu.edu/archlinux/$repo/os/$arch",
+                "https://mirrors.rit.edu/archlinux/$repo/os/$arch",
+                "https://mirror.sfo12.us.leaseweb.net/archlinux/$repo/os/$arch",
+                "https://iad.mirrors.misaka.one/archlinux/$repo/os/$arch"
+            ]
+        },
+        "optional_repositories": [
+            "multilib"
+        ]
+    },
+    "network_config": {
+        "type": "nm"
+    },
+    "ntp": true,
+    "packages": [
+        "adobe-source-code-pro-fonts",
+        "adobe-source-serif-fonts",
+        "adobe-source-sans-fonts",
+        "android-tools",
+        "archlinux-wallpaper",
+        "bat",
+        "bc",
+        "bind",
+        "bitwarden",
+        "blender",
+        "bluez-cups",
+        "bluez-tools",
+        "bluez-utils",
+        "bluez",
+        "btrfs-progs",
+        "calibre",
+        "checkbashisms",
+        "cheese",
+        "chromium",
+        "cups",
+        "curl",
+        "dash",
+        "dconf-editor",
+        "dosfstools",
+        "drawing",
+        "efibootmgr",
+        "emacs",
+        "enchant",
+        "ethtool",
+        "fastfetch",
+        "ffmpeg",
+        "file-roller",
+        "firefox",
+        "foliate",
+        "fontconfig",
+        "fprint",
+        "framework-system",
+        "freecad",
+        "fwupd",
+        "gimp",
+        "git",
+        "glow",
+        "gnome-boxes",
+        "gnome-browser-connector",
+        "gnome-keyring",
+        "gnu-free-fonts",
+        "go",
+        "gparted",
+        "gst-libav",
+        "htop",
+        "hugo",
+        "hunspell-de",
+        "hunspell-en_ca",
+        "hunspell-en_gb",
+        "hunspell-en_us",
+        "hunspell-es_any",
+        "hunspell-es_mx",
+        "hunspell-fr",
+        "hunspell-ru",
+        "hunspell",
+        "hwinfo",
+        "hyphen-de",
+        "hyphen-en",
+        "hyphen-es",
+        "hyphen-fr",
+        "hyphen",
+        "iio-sensor-proxy",
+        "inetutils",
+        "inkscape",
+        "intel-compute-runtime",
+        "intel-gpu-tools",
+        "intel-media-driver",
+        "intel-metee",
+        "intel-ucode",
+        "iucode-tool",
+        "jpegoptim",
+        "jq",
+        "kdenlive",
+        "kitty",
+        "kiwix-desktop",
+        "lesspipe",
+        "lib32-gnutls",
+        "lib32-gst-plugins-base",
+        "lib32-gst-plugins-good",
+        "lib32-mesa",
+        "lib32-pipewire",
+        "lib32-vulkan-intel",
+        "libdvdcss",
+        "libfido2",
+        "libmythes",
+        "libreoffice-still",
+        "libva-utils",
+        "libvpl",
+        "linux-headers",
+        "linux-lts-headers",
+        "lshw",
+        "man-db",
+        "man-pages",
+        "moreutils",
+        "mpv",
+        "mtools",
+        "mythes-de",
+        "mythes-en",
+        "mythes-es",
+        "mythes-fr",
+        "nano-syntax-highlighting",
+        "nano",
+        "newsflash",
+        "nftables",
+        "nmap",
+        "noto-fonts",
+        "noto-fonts-cjk",
+        "noto-fonts-emoji",
+        "noto-fonts-extra",
+        "noto-fonts",
+        "npm",
+        "nuspell",
+        "openrct2",
+        "openscad",
+        "openssh",
+        "otf-libertinus",
+        "otf-overpass",
+        "pacman-contrib",
+        "pika-backup",
+        "prusa-slicer",
+        "python-pip",
+        "python-pipx",
+        "python-pylint",
+        "python-virtualenv",
+        "python",
+        "qt5ct",
+        "qt6ct",
+        "reflector",
+        "ripgrep",
+        "rsync",
+        "samba",
+        "scour",
+        "shellcheck",
+        "shfmt",
+        "signal-desktop",
+        "snap-pac",
+        "snapper",
+        "source-highlight",
+        "sqlitebrowser",
+        "sshfs",
+        "steam",
+        "stow",
+        "syncthing",
+        "sysfsutils",
+        "terminus-font",
+        "tig",
+        "tmux",
+        "torbrowser-launcher",
+        "traceroute",
+        "transmission-gtk",
+        "tree",
+        "ttc-iosevka",
+        "ttf-croscore",
+        "ttf-dejavu",
+        "ttf-fira-code",
+        "ttf-inconsolata",
+        "ttf-jetbrains-mono",
+        "ttf-liberation",
+        "ttf-roboto",
+        "ttf-sarasa-gothic",
+        "ttf-ubuntu-font-family",
+        "ufw",
+        "usbutils",
+        "vim",
+        "vlc",
+        "vpl-gpu-rt",
+        "vulkan-intel",
+        "vulkan-tools",
+        "wget",
+        "wireless-regdb",
+        "xdg-desktop-portal-gnome",
+        "xdg-desktop-portal-kde",
+        "xkcdpass",
+        "yt-dlp",
+        "yubikey-manager",
+        "zsh-completions",
+        "zsh"
+    ],
+    "parallel_downloads": 0,
+    "profile_config": {
+        "gfx_driver": "All open-source",
+        "greeter": "gdm",
+        "profile": {
+            "custom_settings": {
+                "GNOME": {},
+                "KDE Plasma": {}
+            },
+            "details": [
+                "GNOME",
+                "KDE Plasma"
+            ],
+            "main": "Desktop"
+        }
+    },
+    "services": [
+        "bluetooth",
+        "cups",
+        "ufw"
+    ],
+    "swap": false,
+    "timezone": "US/Eastern",
+    "version": null
+}

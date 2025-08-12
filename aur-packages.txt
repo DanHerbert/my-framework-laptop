@@ -1,0 +1,16 @@
+brother-mfc-7860dw
+etcher-bin
+extension-manager
+fw-fanctrl-git
+google-chrome
+image-optimizer
+librewolf-bin
+mullvad-vpn-bin
+needrestart
+pngcheck
+topgrade-bin
+ttf-blobmoji
+ttf-ms-win11-auto
+ttf-noto-emoji-monochrome
+ttf-symbola
+vscodium-bin
