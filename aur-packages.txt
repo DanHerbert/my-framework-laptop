@@ -1,6 +1,5 @@
 brother-mfc-7860dw
 etcher-bin
-extension-manager
 fw-fanctrl-git
 google-chrome
 image-optimizer
