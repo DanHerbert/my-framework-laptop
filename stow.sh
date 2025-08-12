@@ -10,10 +10,10 @@ P_USER=$(stat -c "%U" "$PROJECT_ROOT")
 # Stow internally expects a HOME env var.
 U_HOME="$(getent passwd "$P_USER" | cut -d: -f6)"
 
-(cd ./root/home/user/ && find . -maxdepth 4 -type d -exec sudo -u "$P_USER" mkdir -vp "$U_HOME/{}" \;)
+(cd "$PROJECT_ROOT"/root/home/user/ && find . -maxdepth 4 -type d -exec sudo -u "$P_USER" mkdir -vp "$U_HOME/{}" \;)
 
 ( export PS4=''; set -xe
-(cd ./root/home/; sudo -u "$P_USER" stow --verbose=1 --target="$U_HOME" user)
+(cd "$PROJECT_ROOT"/root/home/; sudo -u "$P_USER" stow --verbose=1 --target="$U_HOME" user)
 )
 
 if [ -x "$PROJECT_ROOT"/nonpublic/stow.sh ]; then
