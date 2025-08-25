@@ -18,13 +18,13 @@ U_HOME="$(eval echo "~${P_USER}")"
 )
 
 has_shown_header=0
-find "$U_HOME" -type l 2>/dev/null | while read -r symlink ; do
-    true_path=$(realpath -q "$symlink")
+find "$U_HOME" -type l 2>/dev/null | while read -r symlink; do
+    true_path=$(realpath -q "$symlink" || true)
     case $true_path in
         "$PROJECT_ROOT"*)
-            if [ ! -e "$true_path" ]; then
+            if [ -L "$symlink" ] && [ ! -e "$true_path" ]; then
                 if [ $has_shown_header = 0 ]; then
-                    echo 'Cleaning up stale symlinks owned by stow.sh...'
+                    echo 'Cleaning up broken symlinks owned by stow.sh ...'
                     has_shown_header=1
                 fi
                 rel_target=$(printf '%s' "$symlink" | sed "s|$U_HOME|~|")
