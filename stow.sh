@@ -2,6 +2,26 @@
 # This script is intentionally idempotent so that it can safely "sync" new files
 # when run repeatedly without any negative side-effects.
 
+# is_sourced borrowed from https://stackoverflow.com/a/28776166
+is_sourced() {
+    if [ -n "$INSIDE_UPDATE_SCRIPT" ]; then
+        return 0
+    fi
+    if [ -n "$ZSH_VERSION" ]; then
+        case $ZSH_EVAL_CONTEXT in *:file:*) return 0 ;; esac
+    else # Add additional POSIX-compatible shell names here, if needed.
+        case ${0##*/} in dash | -dash | bash | -bash | ksh | -ksh | sh | -sh) return 0 ;; esac
+    fi
+    return 1 # NOT sourced.
+}
+
+if is_sourced; then
+    echo 'Script must not be sourced'
+    unset is_sourced
+    exit 1
+fi
+unset is_sourced
+
 # Within the non-login shell triggered through a git hook via a python service
 # the usual $HOME doesn't exist. It also will not point to the correct home
 # since this same situation also means the current user would always be root.
@@ -13,7 +33,7 @@ U_HOME="$(eval echo "~${P_USER}")"
 (cd "$PROJECT_ROOT"/root/home/user/ && find . -maxdepth 4 -type d -exec sudo -u "$P_USER" mkdir -vp "$U_HOME/{}" \;)
 
 (
-    export PS4=''; set -xe
+    export PS4=''; set -x
     (cd "$PROJECT_ROOT"/root/home/ && sudo -u "$P_USER" stow --verbose=1 --target="$U_HOME" user)
 )
 
