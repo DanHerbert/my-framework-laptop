@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh
 # This script is intentionally idempotent so that it can safely "sync" new files
 # when run repeatedly without any negative side-effects.
 
@@ -18,15 +18,22 @@ is_sourced() {
 if is_sourced; then
     echo 'Script must not be sourced'
     unset is_sourced
-    exit 1
+    return 1
 fi
 unset is_sourced
+
+if ! command -v stow >/dev/null 2>&1; then
+    echo 'GNU stow is not installed. All package managers call this "stow".'
+    return 1
+fi
+
+set -e
 
 # Within the non-login shell triggered through a git hook via a python service
 # the usual $HOME doesn't exist. It also will not point to the correct home
 # since this same situation also means the current user would always be root.
 PROJECT_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
-P_USER=$(stat -c "%U" "$PROJECT_ROOT")
+P_USER=$(stat -c "%U" "$PROJECT_ROOT" 2>/dev/null || stat -f "%Su" "$PROJECT_ROOT")
 # Stow internally expects a HOME env var.
 U_HOME="$(eval echo "~${P_USER}")"
 
@@ -34,11 +41,19 @@ U_HOME="$(eval echo "~${P_USER}")"
 
 (
     export PS4=''; set -x
-    (cd "$PROJECT_ROOT"/root/home/ && sudo -u "$P_USER" stow --verbose=1 --target="$U_HOME" user)
+    cd "$PROJECT_ROOT"/root/home/ && sudo -u "$P_USER" stow --verbose=1 --target="$U_HOME" user
 )
 
+# The pruned directory option lines below are technically not required, but will
+# speed up this command quite a bit if the lines included.
 has_shown_header=0
-find "$U_HOME"/.* -type l 2>/dev/null | while read -r symlink; do
+find "$U_HOME"/.* \
+        -path "$U_HOME/.cache" -type d -prune -o \
+        -path "$U_HOME/.local/state/cargo" -type d -prune -o \
+        -path "$U_HOME/.local/state/rustup" -type d -prune -o \
+        -path "$U_HOME/.local/state/golang" -type d -prune -o \
+        -path "$U_HOME/.local/share/Steam" -type d -prune -o \
+        -type l -print 2>/dev/null | while read -r symlink; do
     true_path=$(realpath -q "$symlink" || true)
     case $true_path in
         "$PROJECT_ROOT"*)
