@@ -4,6 +4,9 @@
 # Syntax: simple "KEY=VAL" pairs on separate lines
 #
 ANV_DEBUG=video-decode,video-encode
-SUDO_EDITOR=/usr/bin/vim
-EDITOR=/usr/bin/vim
 BORG_EXIT_CODES=modern
+EDITOR=/usr/bin/vim
+PAGER="/usr/bin/less"
+SUDO_EDITOR=/usr/bin/vim
+SYSTEMD_PAGER="/usr/bin/less"
+TIME_STYLE='+%Y-%0m-%0dT%H:%M'
