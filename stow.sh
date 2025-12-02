@@ -1,14 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 # This script is intentionally idempotent so that it can safely "sync" new files
 # when run repeatedly without any negative side-effects.
 
 # is_sourced borrowed from https://stackoverflow.com/a/28776166
 is_sourced() {
-    if [ -n "$ZSH_VERSION" ]; then
-        case $ZSH_EVAL_CONTEXT in *:file:*) return 0 ;; esac
-    else # Add additional POSIX-compatible shell names here, if needed.
-        case ${0##*/} in dash | -dash | bash | -bash | ksh | -ksh | sh | -sh) return 0 ;; esac
-    fi
+    case ${0##*/} in dash | -dash | bash | -bash | ksh | -ksh | sh | -sh) return 0 ;; esac
     return 1 # NOT sourced.
 }
 
