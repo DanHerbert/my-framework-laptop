@@ -1,0 +1,17 @@
+[misc]
+# topgrade is an AUR package on this system which is updated by Paru. Attempting
+# a self-update will always fail.
+no_self_update = true
+disable = ["restarts"]
+
+[git]
+repos = ["/home/dan/Documents/code/xdg-ninja"]
+
+[firmware]
+upgrade = true
+
+[commands]
+"root dotfiles repository" = "sudo /root/dotfiles/update.sh"
+
+[post_commands]
+"Check for needed restarts" = "sudo needrestart -klwf noninteractive"
