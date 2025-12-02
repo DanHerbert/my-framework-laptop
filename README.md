@@ -47,6 +47,21 @@ sudo systemctl enable snapper-cleanup.timer
 systemctl --user enable --now gcr-ssh-agent.socket
 ```
 
+Install/enable Gnome extensions
+
+```bash
+gnome-extensions enable status-icons@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable system-monitor@gnome-shell-extensions.gcampax.github.com
+gnome-extensions enable user-theme@gnome-shell-extensions.gcampax.github.com
+
+gnome-extensions install world_clock_lite@ailin.nemui
+gnome-extensions install grand-theft-focus@zalckos.github.com
+gnome-extensions install caffeine@patapon.info
+gnome-extensions install arch-update@RaphaelRochet
+gnome-extensions install hide-minimized@danigm.net
+gnome-extensions install appindicatorsupport@rgcjonas.gmail.com
+```
+
 And finally, configure Gnome settings
 
 ```bash
