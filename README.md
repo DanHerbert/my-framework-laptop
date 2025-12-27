@@ -17,6 +17,14 @@ after archinstall finishes and the initial boot of the new system.
 Install [paru](https://github.com/Morganamilo/paru) using the recommended
 installation steps, then install the list of packages in `aur-packages.txt`
 
+```bash
+# User must have the "disk" group to install ttf-ms-win11-auto
+sudo usermod -aG disk $USER
+sudo reboot
+# Logout before installing to ensure the added group takes effect
+paru -Syu $(cat ./aur-packages.txt | tr '\n' ' ')
+```
+
 ## Initial system configuration
 
 First, run `./stow.sh` to symlink needed home files into the system.
