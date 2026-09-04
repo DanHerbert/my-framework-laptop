@@ -1,0 +1,9 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target = google-chrome
+
+[Action]
+Description = Update Helium browser's widevine binary with new Chrome releases
+When = PostTransaction
+Exec = /usr/local/bin/fix-helium-widevine-cdm.sh

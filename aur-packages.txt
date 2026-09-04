@@ -3,8 +3,8 @@ etcher-bin
 fw-ectool-git
 fw-fanctrl-git
 google-chrome
+helium-browser-bin
 image-optimizer
-librewolf-bin
 lmstudio
 mullvad-vpn-bin
 needrestart

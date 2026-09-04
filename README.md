@@ -36,6 +36,12 @@ sudo cp -r ./root/boot /boot
 sudo cp -r ./root/etc /etc
 ```
 
+Symlink files in /root/usr/local/bin into /usr/local/bin/
+
+```bash
+sudo ln ./root/usr/local/bin/* /usr/local/bin/
+```
+
 At this point perform steps listed in `/nonpublic/README.md` if available.
 
 Then enable some systemd daemons:
