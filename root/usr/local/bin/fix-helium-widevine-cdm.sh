@@ -1,45 +1,53 @@
-#!/bin/bash -ex
-cleanup() {
-    rm -rf "$tmp_workdir"
-}
+#!/bin/bash -e
+# This script is run any time the "google-chrome" AUR package is updated, and
+# only does anything if the "helium-browser-bin" AUR package is also installed
+# on the system. This script assumes the machine is a single-user system and
+# will only update Widevine for the primary system user.
+
+if ! pacman -Q helium-browser-bin &>/dev/null; then
+    echo 'Helium browser is not installed. Doing nothing.'
+    exit 0
+fi
 
 # Assumes Helium browser is installed for the primary user on the system, which
 # implies a single-user desktop setup, which is what I use on my laptop.
 helium_user=$(loginctl list-sessions --no-legend | awk '{print $3}' | sort -u | head)
 helium_user_home=$(getent passwd "$helium_user" | cut -d: -f6)
 
-tmp_workdir=$(mktemp -d)
-trap cleanup EXIT
-cd "$tmp_workdir"
-
-_base_url="https://dl.google.com/linux/chrome/deb"
-_packages_url="$_base_url/dists/stable/main/binary-amd64/Packages"
-_file_path=$(wget -qO- "$_packages_url" | awk '/^Package: google-chrome-stable/{flag=1} flag && /^Filename:/{print $2; exit}')
-if [ -z "$_file_path" ]; then
-    echo "Error: can't get latest Chrome version."
-    exit 1
-fi
-_download_url="$_base_url/$_file_path"
-_deb_file=$(basename "$_file_path")
-wget --show-progress -O "$_deb_file" "$_download_url"
-
 # Correct path, at least on Arch Linux when Helium is installed through AUR
 # with helium-browser-bin package.
-_target_dir="$helium_user_home/.config/net.imput.helium/WidevineCdm"
-ownership=$(stat -c "%U:%G" "$_target_dir")
+helium_widevine_path="$helium_user_home/.config/net.imput.helium/WidevineCdm"
+ownership=$(stat -c "%U:%G" "$helium_widevine_path")
+chrome_widevine_path="/opt/google/chrome/WidevineCdm"
+latest_widevine_version=$(jq -r '.version' "$chrome_widevine_path/manifest.json")
+should_update_widevine=0
+if ! [[ -f "$helium_widevine_path/latest-component-updated-widevine-cdm" ]]; then
+    should_update_widevine=1
+else
+    existing_helium_widevine_path=$(jq -r '.Path' "$helium_widevine_path/latest-component-updated-widevine-cdm")
+    existing_widevine_version="${existing_helium_widevine_path##*/}"
+    if [[ "$existing_widevine_version" != "$latest_widevine_version" ]]; then
+        should_update_widevine=1
+    fi
+fi
+if [[ -f "$helium_widevine_path/$latest_widevine_version/_platform_specific/linux_x64/libwidevinecdm.so" ]]; then
+    existing_widevine_hash=$(sha256sum "$helium_widevine_path/$latest_widevine_version/_platform_specific/linux_x64/libwidevinecdm.so" | awk '{print $1}')
+    latest_widevine_hash=$(sha256sum "$chrome_widevine_path/_platform_specific/linux_x64/libwidevinecdm.so" | awk '{print $1}')
+    if [[ "$existing_widevine_hash" != "$latest_widevine_hash" ]]; then
+        should_update_widevine=1
+    fi
+else
+    should_update_widevine=1
+fi
+if [ "$should_update_widevine" -eq 0 ]; then
+    exit 0
+fi
+echo 'Widevine update detected, copying from google-chrome install...'
 
-# Unpack deb
-mkdir ./unpacked_deb
-cd ./unpacked_deb
-ar x "../$_deb_file"
-tar -xf ./data.tar.* -C .
-cd ../
-
-# Move WidevineCdm to target dir owned by current user
-rm -r "$_target_dir" || true
-_widevine_version=$(jq -r '.version' ./unpacked_deb/opt/google/chrome/WidevineCdm/manifest.json)
-mkdir -p "$_target_dir/$_widevine_version"
-mv ./unpacked_deb/opt/google/chrome/WidevineCdm/* "$_target_dir/$_widevine_version/"
-chmod 755 "$_target_dir/$_widevine_version/_platform_specific/linux_x64/libwidevinecdm.so"
-chown -R "$ownership" "$_target_dir"
-echo '{"Path":"'"$_target_dir/$_widevine_version"'"}' > "$_target_dir/latest-component-updated-widevine-cdm"
+# Copy WidevineCdm from google-chrome package to target dir
+rm -r "$helium_widevine_path" || true
+mkdir -p "$helium_widevine_path/$latest_widevine_version"
+cp -r "$chrome_widevine_path"/* "$helium_widevine_path/$latest_widevine_version/"
+chmod 755 "$helium_widevine_path/$latest_widevine_version/_platform_specific/linux_x64/libwidevinecdm.so"
+chown -R "$ownership" "$helium_widevine_path"
+echo '{"Path":"'"$helium_widevine_path/$latest_widevine_version"'"}' > "$helium_widevine_path/latest-component-updated-widevine-cdm"
