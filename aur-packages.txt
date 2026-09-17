@@ -1,11 +1,9 @@
 chrome-remote-desktop
-etcher-bin
 fw-ectool-git
 fw-fanctrl-git
 google-chrome
 helium-browser-bin
 image-optimizer
-lmstudio
 mullvad-vpn-bin
 needrestart
 openaudible-bin
