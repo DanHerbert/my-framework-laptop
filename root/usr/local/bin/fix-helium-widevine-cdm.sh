@@ -12,16 +12,19 @@ fi
 # Assumes Helium browser is installed for the primary user on the system, which
 # implies a single-user desktop setup, which is what I use on my laptop.
 helium_user=$(loginctl list-sessions --no-legend | awk '{print $3}' | sort -u | head)
+helium_group=$(id -gn "$helium_user")
 helium_user_home=$(getent passwd "$helium_user" | cut -d: -f6)
 
 # Correct path, at least on Arch Linux when Helium is installed through AUR
 # with helium-browser-bin package.
 helium_widevine_path="$helium_user_home/.config/net.imput.helium/WidevineCdm"
-ownership=$(stat -c "%U:%G" "$helium_widevine_path")
+helium_ownership="$helium_user:$helium_group"
 chrome_widevine_path="/opt/google/chrome/WidevineCdm"
 latest_widevine_version=$(jq -r '.version' "$chrome_widevine_path/manifest.json")
 should_update_widevine=0
-if ! [[ -f "$helium_widevine_path/latest-component-updated-widevine-cdm" ]]; then
+if ! [[ -d "$helium_widevine_path" ]]; then
+    should_update_widevine=1
+elif ! [[ -f "$helium_widevine_path/latest-component-updated-widevine-cdm" ]]; then
     should_update_widevine=1
 else
     existing_helium_widevine_path=$(jq -r '.Path' "$helium_widevine_path/latest-component-updated-widevine-cdm")
@@ -39,15 +42,19 @@ if [[ -f "$helium_widevine_path/$latest_widevine_version/_platform_specific/linu
 else
     should_update_widevine=1
 fi
+if [[ -d "$helium_widevine_path" ]]; then
+    helium_ownership=$(stat -c "%U:%G" "$helium_widevine_path")
+fi
+
 if [ "$should_update_widevine" -eq 0 ]; then
     exit 0
 fi
-echo 'Widevine update detected, copying from google-chrome install...'
+echo 'Widevine update detected, copying from google-chrome install to helium...'
 
 # Copy WidevineCdm from google-chrome package to target dir
 rm -r "$helium_widevine_path" || true
 mkdir -p "$helium_widevine_path/$latest_widevine_version"
 cp -r "$chrome_widevine_path"/* "$helium_widevine_path/$latest_widevine_version/"
 chmod 755 "$helium_widevine_path/$latest_widevine_version/_platform_specific/linux_x64/libwidevinecdm.so"
-chown -R "$ownership" "$helium_widevine_path"
+chown -R "$helium_ownership" "$helium_widevine_path"
 echo '{"Path":"'"$helium_widevine_path/$latest_widevine_version"'"}' > "$helium_widevine_path/latest-component-updated-widevine-cdm"
